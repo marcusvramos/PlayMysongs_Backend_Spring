@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @RestController
 @RequestMapping("/songs")
@@ -31,11 +32,16 @@ public class SongController {
             return ResponseEntity.badRequest().body("Invalid file type.");
         }
 
-        String uploadDir = "uploads/"; // Configure conforme necessário
-        Path filePath = Paths.get(uploadDir, file.getOriginalFilename());
+        String uploadDir = "uploads";
+        Path uploadPath = Paths.get(uploadDir);
 
         try {
-            Files.copy(file.getInputStream(), filePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(file.getOriginalFilename());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             Song song = new Song();
             song.setName(name);
             song.setStyle(style);
@@ -43,11 +49,12 @@ public class SongController {
             song.setFilePath(filePath.toString());
             songService.uploadSong(song);
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Failed to upload the file.");
+            return ResponseEntity.internalServerError().body("Failed to upload the file: " + e.getMessage());
         }
 
         return ResponseEntity.ok("File uploaded successfully.");
     }
+
 
     @GetMapping
     public ResponseEntity<?> getSongs(@RequestParam(value = "filter", required = false) String filter) {
