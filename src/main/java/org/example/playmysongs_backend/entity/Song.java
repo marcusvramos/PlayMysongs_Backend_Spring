@@ -5,15 +5,18 @@ public class Song {
     private String style;
     private String artist;
     private String filePath;
-
-    public Song() {
-    }
+    private String url;
 
     public Song(String name, String style, String artist, String filePath) {
         this.name = name;
         this.style = style;
         this.artist = artist;
         this.filePath = filePath;
+        this.url = "http://localhost:8080" + filePath;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public String getName() {
@@ -26,25 +29,5 @@ public class Song {
 
     public String getArtist() {
         return artist;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStyle(String style) {
-        this.style = style;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
     }
 }
